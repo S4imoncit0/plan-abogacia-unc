@@ -29,3 +29,22 @@ y:250
 }
 
 ]
+
+const correlativas = [
+
+{
+source:"intro_derecho",
+target:"privado"
+},
+
+{
+source:"romano",
+target:"privado"
+},
+
+{
+source:"historia",
+target:"privado"
+}
+
+]
