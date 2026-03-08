@@ -8,19 +8,33 @@ JSON.parse(localStorage.getItem(STORAGE_KEY)) || []
 
 let filtroActual = "all";
 
+/* POSICIONAMIENTO EN GRILLA */
+
+let filasPorAnio = {};
+
 /* NODOS */
 
-const nodes = materias.map((m,i)=>({
+const nodes = materias.map((m)=>{
+
+if(!filasPorAnio[m.anio]){
+filasPorAnio[m.anio]=0;
+}
+
+let fila = filasPorAnio[m.anio]++;
+
+return {
 data:{
 id:m.id,
 label:m.nombre,
 anio:m.anio
 },
 position:{
-x:(m.anio-1)*250,
-y:100+(i%5)*120
+x:(m.anio-1)*260,
+y:100 + fila*110
 }
-}));
+};
+
+});
 
 /* EDGES */
 
@@ -47,29 +61,19 @@ style:[
 selector:"node",
 style:{
 label:"data(label)",
-
 shape:"round-rectangle",
-
 width:170,
 height:60,
-
 padding:"10px",
-
 "text-wrap":"wrap",
 "text-max-width":140,
-
 "text-valign":"center",
 "text-halign":"center",
-
 color:"#fff",
-
 "background-color":"#0074D9",
-
 "border-width":2,
 "border-color":"#1e3a8a",
-
 "font-size":11,
-
 "transition-property":"background-color, width, height",
 "transition-duration":"0.2s"
 }
@@ -131,7 +135,7 @@ wheelSensitivity:0.2
 
 });
 
-/* SOLUCIÓN OFFSET */
+/* FIX OFFSET */
 
 requestAnimationFrame(()=>{
 
@@ -141,7 +145,7 @@ cy.center();
 
 });
 
-/* RESTAURAR APROBADAS */
+/* RESTORE */
 
 aprobadas.forEach(id=>{
 let node=cy.getElementById(id);
@@ -214,7 +218,7 @@ aprobadasCount + " de " + total + " materias aprobadas (" + porcentaje + "%)";
 
 }
 
-/* LISTA DISPONIBLES */
+/* DISPONIBLES */
 
 function actualizarMateriasDisponibles(){
 
@@ -231,9 +235,7 @@ let node = cy.getElementById(m.id);
 if(node.hasClass("disponible") && !aprobadas.has(m.id)){
 
 let li = document.createElement("li");
-
 li.textContent = m.nombre;
-
 lista.appendChild(li);
 
 }
@@ -281,14 +283,13 @@ cy.fit(cy.elements(":visible"),100);
 
 }
 
-/* BOTONES FILTRO */
+/* BOTONES */
 
 document.querySelectorAll(".filtros button").forEach(btn=>{
 
 btn.addEventListener("click",()=>{
 
 let anio = btn.dataset.anio;
-
 aplicarFiltro(anio);
 
 });
