@@ -175,7 +175,7 @@ node.addClass("bloqueada");
 
 }
 
-/* BARRA DE PROGRESO */
+/* ACTUALIZAR BARRA DE PROGRESO */
 function actualizarProgreso(){
 
 let total = materias.length;
@@ -187,6 +187,42 @@ document.getElementById("progreso-barra").style.width = porcentaje + "%";
 
 document.getElementById("progreso-texto").innerText =
 aprobadasCount + " de " + total + " materias aprobadas (" + porcentaje + "%)";
+
+}
+
+/* NUEVO: LISTA DE MATERIAS DISPONIBLES */
+
+function actualizarMateriasDisponibles(){
+
+let lista = document.getElementById("lista-disponibles");
+
+if(!lista) return;
+
+lista.innerHTML="";
+
+materias.forEach(m=>{
+
+let node = cy.getElementById(m.id);
+
+if(node.hasClass("disponible") && !aprobadas.has(m.id)){
+
+let li = document.createElement("li");
+
+li.textContent = m.nombre;
+
+lista.appendChild(li);
+
+}
+
+});
+
+if(lista.children.length === 0){
+
+let li = document.createElement("li");
+li.textContent="No hay materias disponibles";
+lista.appendChild(li);
+
+}
 
 }
 
@@ -276,6 +312,7 @@ JSON.stringify([...aprobadas])
 
 actualizarBloqueos();
 actualizarProgreso();
+actualizarMateriasDisponibles();
 
 });
 
@@ -283,5 +320,6 @@ actualizarProgreso();
 
 actualizarBloqueos();
 actualizarProgreso();
+actualizarMateriasDisponibles();
 
 });
