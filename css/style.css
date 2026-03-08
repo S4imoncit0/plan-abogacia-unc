@@ -22,11 +22,12 @@ padding:0 20px;
 
 /* CYTOSCAPE */
 #cy{
-width:1200px;
-height:700px;
-margin:20px auto;
-display:block;
+position: relative;
+width: 100%;
+height: 700px;
+margin-top:20px;
 border-top:1px solid #ddd;
+overflow:hidden;
 }
 
 /* TIMELINE */
@@ -48,3 +49,9 @@ transform:translateX(-50%);
 .timeline span:nth-child(3){left:50%;}
 .timeline span:nth-child(4){left:70%;}
 .timeline span:nth-child(5){left:90%;}
+
+#cy canvas{
+position:absolute;
+left:0;
+top:0;
+}
