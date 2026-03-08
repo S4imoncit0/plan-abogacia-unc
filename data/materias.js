@@ -3,48 +3,33 @@ const materias = [
 {
 id:"intro_derecho",
 nombre:"Introducción al Derecho",
-x:100,
+anio:1,
+x:200,
 y:100
 },
 
 {
 id:"romano",
 nombre:"Derecho Romano",
-x:350,
-y:100
+anio:1,
+x:200,
+y:200
 },
 
 {
 id:"historia",
 nombre:"Historia Constitucional",
-x:600,
-y:100
+anio:1,
+x:200,
+y:300
 },
 
 {
 id:"privado",
 nombre:"Derecho Privado",
-x:350,
-y:250
-}
-
-]
-
-const correlativas = [
-
-{
-source:"intro_derecho",
-target:"privado"
-},
-
-{
-source:"romano",
-target:"privado"
-},
-
-{
-source:"historia",
-target:"privado"
+anio:2,
+x:500,
+y:200
 }
 
 ]
