@@ -8,11 +8,9 @@ JSON.parse(localStorage.getItem(STORAGE_KEY)) || []
 
 let filtroActual = "all";
 
-/* POSICIONAMIENTO EN GRILLA */
+/* POSICIONAMIENTO */
 
 let filasPorAnio = {};
-
-/* NODOS */
 
 const nodes = materias.map((m)=>{
 
@@ -87,14 +85,34 @@ height:65
 }
 },
 
+/* EDGE BASE */
+
 {
 selector:"edge",
 style:{
 width:2,
-"line-color":"#ccc",
-"target-arrow-color":"#ccc",
+"line-color":"#9ca3af",
+"target-arrow-color":"#9ca3af",
 "target-arrow-shape":"triangle",
 "curve-style":"bezier"
+}
+},
+
+{
+selector:".edge-activa",
+style:{
+"line-color":"#3b82f6",
+"target-arrow-color":"#3b82f6",
+width:3
+}
+},
+
+{
+selector:".edge-completa",
+style:{
+"line-color":"#22c55e",
+"target-arrow-color":"#22c55e",
+width:3
 }
 },
 
@@ -122,8 +140,6 @@ color:"#000",
 "border-color":"#ca8a04"
 }
 },
-
-/* NUEVO: HIGHLIGHT CUANDO SE DESBLOQUEA */
 
 {
 selector:".highlight",
@@ -172,13 +188,36 @@ return correlativas
 
 }
 
-/* NUEVO: OBTENER MATERIAS QUE DEPENDEN DE ESTA */
-
 function dependientesDe(id){
 
 return correlativas
 .filter(c=>c.from===id)
 .map(c=>c.to);
+
+}
+
+/* NUEVO: ACTUALIZAR COLOR DE EDGES */
+
+function actualizarCorrelativas(){
+
+cy.edges().forEach(edge=>{
+
+let source=edge.source().id();
+let target=edge.target().id();
+
+edge.removeClass("edge-activa edge-completa");
+
+if(aprobadas.has(source)){
+
+if(aprobadas.has(target)){
+edge.addClass("edge-completa");
+}else{
+edge.addClass("edge-activa");
+}
+
+}
+
+});
 
 }
 
@@ -254,17 +293,17 @@ let node = cy.getElementById(m.id);
 
 if(node.hasClass("disponible") && !aprobadas.has(m.id)){
 
-let li = document.createElement("li");
-li.textContent = m.nombre;
+let li=document.createElement("li");
+li.textContent=m.nombre;
 lista.appendChild(li);
 
 }
 
 });
 
-if(lista.children.length === 0){
+if(lista.children.length===0){
 
-let li = document.createElement("li");
+let li=document.createElement("li");
 li.textContent="No hay materias disponibles";
 lista.appendChild(li);
 
@@ -276,26 +315,26 @@ lista.appendChild(li);
 
 function aplicarFiltro(anio){
 
-filtroActual = anio;
+filtroActual=anio;
 
 cy.nodes().forEach(node=>{
 
-let nodeAnio = node.data("anio");
+let nodeAnio=node.data("anio");
 
-if(anio === "all"){
+if(anio==="all"){
 node.style("display","element");
 }else{
-node.style("display", nodeAnio == anio ? "element":"none");
+node.style("display", nodeAnio==anio?"element":"none");
 }
 
 });
 
 cy.edges().forEach(edge=>{
 
-let sourceVisible = edge.source().style("display") === "element";
-let targetVisible = edge.target().style("display") === "element";
+let sourceVisible=edge.source().style("display")==="element";
+let targetVisible=edge.target().style("display")==="element";
 
-edge.style("display", (sourceVisible && targetVisible) ? "element":"none");
+edge.style("display",(sourceVisible&&targetVisible)?"element":"none");
 
 });
 
@@ -309,7 +348,7 @@ document.querySelectorAll(".filtros button").forEach(btn=>{
 
 btn.addEventListener("click",()=>{
 
-let anio = btn.dataset.anio;
+let anio=btn.dataset.anio;
 aplicarFiltro(anio);
 
 });
@@ -325,15 +364,15 @@ let id=node.id();
 
 if(node.hasClass("bloqueada")) return;
 
-let desbloqueadas = dependientesDe(id);
+let desbloqueadas=dependientesDe(id);
 
 node.animate({
-style:{ width:180, height:70 }
+style:{width:180,height:70}
 },{
 duration:100,
 complete:()=>{
 node.animate({
-style:{ width:170, height:60 }
+style:{width:170,height:60}
 },{
 duration:100
 });
@@ -350,11 +389,9 @@ node.removeClass("aprobada");
 aprobadas.add(id);
 node.addClass("aprobada");
 
-/* NUEVO: HIGHLIGHT DE CORRELATIVAS */
-
 desbloqueadas.forEach(dep=>{
 
-let n = cy.getElementById(dep);
+let n=cy.getElementById(dep);
 
 n.addClass("highlight");
 
@@ -372,6 +409,7 @@ JSON.stringify([...aprobadas])
 );
 
 actualizarBloqueos();
+actualizarCorrelativas();
 actualizarProgreso();
 actualizarMateriasDisponibles();
 
@@ -380,6 +418,7 @@ actualizarMateriasDisponibles();
 /* INIT */
 
 actualizarBloqueos();
+actualizarCorrelativas();
 actualizarProgreso();
 actualizarMateriasDisponibles();
 
