@@ -1,45 +1,138 @@
-body{
+let estados = JSON.parse(localStorage.getItem("estados")) || {}
 
-background:#020617;
-color:white;
-font-family:system-ui;
-text-align:center;
+materias.forEach(m => {
+    if(!estados[m.id]) estados[m.id] = "pendiente"
+})
+
+function obtenerAprobadas(){
+    return Object.keys(estados).filter(id => estados[id] === "aprobada")
+}
+
+function puedeCursar(materia){
+
+    let aprobadas = obtenerAprobadas()
+
+    return correlativas
+        .filter(c => c.target === materia.id)
+        .every(c => aprobadas.includes(c.source))
 
 }
 
-h1{
+function colorEstado(id){
 
-margin-top:30px;
-font-size:32px;
+    let estado = estados[id]
 
-}
+    if(estado === "aprobada") return "#22c55e"
+    if(estado === "regular") return "#f97316"
 
-p{
+    if(puedeCursar({id})) return "#ffffff"
 
-opacity:0.7;
-
-}
-
-#cy{
-
-width:100%;
-height:85vh;
-margin-top:30px;
+    return "#374151"
 
 }
 
-.timeline{
+const cy = cytoscape({
 
-position:relative;
-height:40px;
-margin-top:20px;
+container: document.getElementById('cy'),
+
+elements: [
+
+...materias.map(m => ({
+data:{ id:m.id, label:m.nombre },
+position:{ x:m.x, y:m.y }
+})),
+
+...correlativas.map(c => ({
+data:{ source:c.source, target:c.target }
+}))
+
+],
+
+style:[
+
+{
+selector:'node',
+style:{
+'label':'data(label)',
+'background-color':'#374151',
+'text-valign':'center',
+'text-halign':'center',
+'color':'white',
+'width':220,
+'height':60,
+'shape':'roundrectangle',
+'font-size':14,
+'border-width':3,
+'border-color':'#1e293b'
+}
+},
+
+{
+selector:'edge',
+style:{
+'curve-style':'bezier',
+'target-arrow-shape':'triangle',
+'line-color':'#3b82f6',
+'target-arrow-color':'#3b82f6',
+'width':2
+}
+}
+
+],
+
+layout:{
+name:'preset'
+}
+
+})
+
+/* CENTRAR EL GRAFO */
+setTimeout(() => {
+
+cy.fit()
+cy.center()
+
+}, 100)
+
+function actualizarColores(){
+
+materias.forEach(m => {
+
+let nodo = cy.getElementById(m.id)
+
+if(!nodo) return
+
+let color = colorEstado(m.id)
+
+nodo.style("background-color", color)
+
+if(color === "#ffffff"){
+nodo.style("color","#000")
+}else{
+nodo.style("color","#fff")
+}
+
+})
+
+localStorage.setItem("estados", JSON.stringify(estados))
 
 }
 
-.timeline span{
+cy.on('tap','node',function(evt){
 
-position:absolute;
-font-weight:bold;
-opacity:0.7;
+let id = evt.target.id()
 
-}
+if(estados[id] === "pendiente")
+estados[id] = "regular"
+
+else if(estados[id] === "regular")
+estados[id] = "aprobada"
+
+else
+estados[id] = "pendiente"
+
+actualizarColores()
+
+})
+
+actualizarColores()
