@@ -14,7 +14,7 @@ label:m.nombre,
 anio:m.anio
 },
 position:{
-x:(m.anio-1)*300,
+x:(m.anio-3)*300,
 y:100+(i%5)*120
 }
 }));
