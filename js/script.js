@@ -1,6 +1,6 @@
 const STORAGE_KEY = "abogacia_aprobadas";
 
-document.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("load", () => {
 
 let aprobadas = new Set(
 JSON.parse(localStorage.getItem(STORAGE_KEY)) || []
@@ -14,7 +14,7 @@ label:m.nombre,
 anio:m.anio
 },
 position:{
-x:(m.anio-3)*300,
+x:(m.anio-1)*250,
 y:100+(i%5)*120
 }
 }));
@@ -88,6 +88,17 @@ name:"preset"
 
 });
 
+/* SOLUCIÓN AL OFFSET */
+requestAnimationFrame(()=>{
+
+cy.resize();
+
+cy.fit(cy.elements(),100);
+
+cy.center();
+
+});
+
 /* RESTAURAR APROBADAS */
 aprobadas.forEach(id=>{
 let node=cy.getElementById(id);
@@ -117,7 +128,6 @@ return;
 
 let requisitos=correlativasDe(id);
 
-/* si no tiene correlativas → habilitada */
 if(requisitos.length===0){
 node.removeClass("bloqueada");
 return;
@@ -141,7 +151,6 @@ cy.nodes().on("tap",function(evt){
 let node=evt.target;
 let id=node.id();
 
-/* bloqueada → no permitir */
 if(node.hasClass("bloqueada")) return;
 
 if(aprobadas.has(id)){
