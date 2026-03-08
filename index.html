@@ -16,7 +16,13 @@
 
 <div class="container">
 
+<div class="header-top">
+
 <h1>⚖️ Plan de estudios - Abogacía UNC</h1>
+
+<button id="toggle-theme">🌙</button>
+
+</div>
 
 <div class="timeline">
 <span>1° Año</span>
@@ -45,13 +51,9 @@
 <button data-anio="5">5° Año</button>
 </div>
 
-<!-- DESPLEGABLE MATERIAS DISPONIBLES -->
-
 <details id="materias-disponibles">
 <summary>📚 Materias que podés cursar ahora</summary>
-
 <ul id="lista-disponibles"></ul>
-
 </details>
 
 <div id="cy"></div>
@@ -60,6 +62,26 @@
 
 <script src="data/materias.js"></script>
 <script src="js/script.js"></script>
+
+<script>
+
+/* TOGGLE DARK MODE */
+
+const btn = document.getElementById("toggle-theme");
+
+btn.addEventListener("click", () => {
+
+document.body.classList.toggle("dark-mode");
+
+if(document.body.classList.contains("dark-mode")){
+btn.textContent="☀️";
+}else{
+btn.textContent="🌙";
+}
+
+});
+
+</script>
 
 </body>
 
