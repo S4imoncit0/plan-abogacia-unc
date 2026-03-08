@@ -14,7 +14,7 @@ label:m.nombre,
 anio:m.anio
 },
 position:{
-x:m.anio*300,
+x:(m.anio-1)*300,
 y:100+(i%5)*120
 }
 }));
@@ -88,9 +88,12 @@ name:"preset"
 
 });
 
-/* FORZAR AJUSTE DEL CANVAS */
+/* AJUSTE CORRECTO DEL CANVAS (evita desfase de clicks) */
+setTimeout(() => {
 cy.resize();
-cy.fit();
+cy.fit(cy.elements(), 80);
+cy.center();
+}, 100);
 
 /* RESTAURAR APROBADAS */
 aprobadas.forEach(id=>{
@@ -123,10 +126,8 @@ let requisitos=correlativasDe(id);
 
 /* si no tiene correlativas → habilitada */
 if(requisitos.length===0){
-
 node.removeClass("bloqueada");
 return;
-
 }
 
 let habilitada=requisitos.every(r=>aprobadas.has(r));
