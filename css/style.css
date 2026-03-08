@@ -14,13 +14,14 @@ margin-top:10px;
 }
 
 /* CONTENEDOR PRINCIPAL */
+
 .container{
 max-width:1200px;
 margin:auto;
-padding:0 20px;
 }
 
 /* CYTOSCAPE */
+
 #cy{
 position: relative;
 width: 100%;
@@ -30,7 +31,14 @@ border-top:1px solid #ddd;
 overflow:hidden;
 }
 
+#cy canvas{
+position:absolute;
+left:0;
+top:0;
+}
+
 /* TIMELINE */
+
 .timeline{
 position:relative;
 height:40px;
@@ -50,13 +58,7 @@ transform:translateX(-50%);
 .timeline span:nth-child(4){left:70%;}
 .timeline span:nth-child(5){left:90%;}
 
-#cy canvas{
-position:absolute;
-left:0;
-top:0;
-}
-
-/* PROGRESO CARRERA */
+/* BARRA DE PROGRESO */
 
 .progreso-container{
 width:80%;
@@ -77,6 +79,8 @@ transition:width 0.4s;
 #progreso-texto{
 font-weight:bold;
 }
+
+/* PROGRESO POR AÑO */
 
 #progreso-por-anio{
 margin-top:10px;
@@ -100,6 +104,8 @@ color:white;
 font-weight:bold;
 }
 
+/* FILTROS */
+
 .filtros{
 display:flex;
 gap:10px;
@@ -122,8 +128,10 @@ font-size:14px;
 background:#005fa3;
 }
 
+/* DESPLEGABLE MATERIAS DISPONIBLES */
+
 #materias-disponibles{
-margin:20px auto;
+margin:15px auto;
 max-width:600px;
 background:#fff;
 border:1px solid #ddd;
@@ -131,8 +139,10 @@ border-radius:8px;
 padding:10px 15px;
 }
 
-#materias-disponibles h3{
-margin-top:0;
+#materias-disponibles summary{
+font-weight:bold;
+cursor:pointer;
+margin-bottom:5px;
 }
 
 #lista-disponibles{
