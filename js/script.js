@@ -6,7 +6,7 @@ let aprobadas = new Set(
 JSON.parse(localStorage.getItem(STORAGE_KEY)) || []
 );
 
-/* crear nodos */
+/* NODOS */
 const nodes = materias.map((m,i)=>({
 data:{
 id:m.id,
@@ -19,7 +19,7 @@ y:100+(i%5)*120
 }
 }));
 
-/* crear edges */
+/* EDGES */
 const edges = correlativas.map(c=>({
 data:{
 id:c.from+"_"+c.to,
@@ -88,35 +88,46 @@ name:"preset"
 
 });
 
-/* restaurar aprobadas */
+/* RESTAURAR APROBADAS */
 aprobadas.forEach(id=>{
 let node=cy.getElementById(id);
 if(node) node.addClass("aprobada");
 });
 
-/* verificar correlativas */
-function cumpleCorrelativas(id){
+/* OBTENER CORRELATIVAS */
+function correlativasDe(id){
 
-const requisitos=correlativas
+return correlativas
 .filter(c=>c.to===id)
 .map(c=>c.from);
 
-if(requisitos.length===0) return true;
-
-return requisitos.every(r=>aprobadas.has(r));
-
 }
 
-/* actualizar bloqueos */
+/* ACTUALIZAR BLOQUEOS */
 function actualizarBloqueos(){
 
 cy.nodes().forEach(node=>{
 
 let id=node.id();
 
-if(aprobadas.has(id)) return;
+if(aprobadas.has(id)){
+node.removeClass("bloqueada");
+return;
+}
 
-if(cumpleCorrelativas(id)){
+let requisitos=correlativasDe(id);
+
+/* si no tiene correlativas → habilitada */
+if(requisitos.length===0){
+
+node.removeClass("bloqueada");
+return;
+
+}
+
+let habilitada=requisitos.every(r=>aprobadas.has(r));
+
+if(habilitada){
 node.removeClass("bloqueada");
 }else{
 node.addClass("bloqueada");
@@ -128,12 +139,13 @@ node.addClass("bloqueada");
 
 actualizarBloqueos();
 
-/* CLICK EN NODOS */
+/* CLICK */
 cy.nodes().on("tap",function(evt){
 
 let node=evt.target;
 let id=node.id();
 
+/* bloqueada → no permitir */
 if(node.hasClass("bloqueada")) return;
 
 if(aprobadas.has(id)){
