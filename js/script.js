@@ -88,6 +88,10 @@ name:"preset"
 
 });
 
+/* FORZAR AJUSTE DEL CANVAS */
+cy.resize();
+cy.fit();
+
 /* RESTAURAR APROBADAS */
 aprobadas.forEach(id=>{
 let node=cy.getElementById(id);
@@ -105,8 +109,6 @@ return correlativas
 
 /* ACTUALIZAR BLOQUEOS */
 function actualizarBloqueos(){
-cy.resize();
-cy.fit();
 
 cy.nodes().forEach(node=>{
 
@@ -139,8 +141,6 @@ node.addClass("bloqueada");
 
 }
 
-actualizarBloqueos();
-
 /* CLICK */
 cy.nodes().on("tap",function(evt){
 
@@ -170,5 +170,7 @@ JSON.stringify([...aprobadas])
 actualizarBloqueos();
 
 });
+
+actualizarBloqueos();
 
 });
