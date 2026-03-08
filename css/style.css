@@ -121,3 +121,26 @@ font-size:14px;
 .filtros button:hover{
 background:#005fa3;
 }
+
+#materias-disponibles{
+margin:20px auto;
+max-width:600px;
+background:#fff;
+border:1px solid #ddd;
+border-radius:8px;
+padding:10px 15px;
+}
+
+#materias-disponibles h3{
+margin-top:0;
+}
+
+#lista-disponibles{
+list-style:none;
+padding:0;
+margin:0;
+}
+
+#lista-disponibles li{
+padding:4px 0;
+}
