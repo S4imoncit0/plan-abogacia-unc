@@ -88,13 +88,6 @@ name:"preset"
 
 });
 
-/* AJUSTE CORRECTO DEL CANVAS (evita desfase de clicks) */
-setTimeout(() => {
-cy.resize();
-cy.fit(cy.elements(), 80);
-cy.center();
-}, 100);
-
 /* RESTAURAR APROBADAS */
 aprobadas.forEach(id=>{
 let node=cy.getElementById(id);
