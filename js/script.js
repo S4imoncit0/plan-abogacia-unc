@@ -105,6 +105,8 @@ return correlativas
 
 /* ACTUALIZAR BLOQUEOS */
 function actualizarBloqueos(){
+cy.resize();
+cy.fit();
 
 cy.nodes().forEach(node=>{
 
