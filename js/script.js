@@ -6,6 +6,8 @@ let aprobadas = new Set(
 JSON.parse(localStorage.getItem(STORAGE_KEY)) || []
 );
 
+let filtroActual = "all";
+
 /* NODOS */
 const nodes = materias.map((m,i)=>({
 data:{
@@ -104,8 +106,6 @@ layout:{
 name:"preset"
 },
 
-/* CONTROL DE ZOOM */
-
 minZoom:0.5,
 maxZoom:2,
 wheelSensitivity:0.2
@@ -153,7 +153,6 @@ return;
 
 let requisitos=correlativasDe(id);
 
-/* sin correlativas → disponible */
 if(requisitos.length===0){
 node.removeClass("bloqueada");
 node.addClass("disponible");
@@ -176,7 +175,7 @@ node.addClass("bloqueada");
 
 }
 
-/* ACTUALIZAR BARRA DE PROGRESO */
+/* BARRA DE PROGRESO */
 function actualizarProgreso(){
 
 let total = materias.length;
@@ -191,7 +190,53 @@ aprobadasCount + " de " + total + " materias aprobadas (" + porcentaje + "%)";
 
 }
 
+/* FILTRO POR AÑO */
+
+function aplicarFiltro(anio){
+
+filtroActual = anio;
+
+cy.nodes().forEach(node=>{
+
+let nodeAnio = node.data("anio");
+
+if(anio === "all"){
+node.style("display","element");
+}else{
+node.style("display", nodeAnio == anio ? "element":"none");
+}
+
+});
+
+cy.edges().forEach(edge=>{
+
+let sourceVisible = edge.source().style("display") === "element";
+let targetVisible = edge.target().style("display") === "element";
+
+edge.style("display", (sourceVisible && targetVisible) ? "element":"none");
+
+});
+
+cy.fit(cy.elements(":visible"),100);
+
+}
+
+/* BOTONES FILTRO */
+
+document.querySelectorAll(".filtros button").forEach(btn=>{
+
+btn.addEventListener("click",()=>{
+
+let anio = btn.dataset.anio;
+
+aplicarFiltro(anio);
+
+});
+
+});
+
 /* CLICK EN MATERIA */
+
 cy.nodes().on("tap",function(evt){
 
 let node=evt.target;
@@ -199,7 +244,6 @@ let id=node.id();
 
 if(node.hasClass("bloqueada")) return;
 
-/* animación */
 node.animate({
 style:{ width:160, height:80 }
 },{
@@ -236,6 +280,7 @@ actualizarProgreso();
 });
 
 /* INICIALIZACIÓN */
+
 actualizarBloqueos();
 actualizarProgreso();
 
