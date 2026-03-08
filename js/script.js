@@ -15,6 +15,7 @@ function puedeCursar(materia){
     return correlativas
         .filter(c => c.target === materia.id)
         .every(c => aprobadas.includes(c.source))
+
 }
 
 function colorEstado(id){
@@ -27,128 +28,111 @@ function colorEstado(id){
     if(puedeCursar({id})) return "#ffffff"
 
     return "#374151"
+
 }
-
-/*
-Si alguna materia no tiene posición definida
-le damos una automática para que no rompa el grafo
-*/
-
-const elementosMaterias = materias.map((m, index) => ({
-
-    data:{
-        id:m.id,
-        label:m.nombre
-    },
-
-    position:{
-        x: m.x ?? (200 + (index * 250)),
-        y: m.y ?? 100
-    }
-
-}))
-
-const elementosCorrelativas = correlativas.map(c => ({
-
-    data:{
-        source:c.source,
-        target:c.target
-    }
-
-}))
 
 const cy = cytoscape({
 
-    container: document.getElementById('cy'),
+container: document.getElementById('cy'),
 
-    elements: [
-        ...elementosMaterias,
-        ...elementosCorrelativas
-    ],
+elements: [
 
-    style:[
+...materias.map(m => ({
+data:{ id:m.id, label:m.nombre },
+position:{ x:m.x, y:m.y }
+})),
 
-        {
-            selector:'node',
-            style:{
-                'label':'data(label)',
-                'background-color':'#374151',
-                'text-valign':'center',
-                'text-halign':'center',
-                'color':'white',
-                'width':220,
-                'height':60,
-                'shape':'roundrectangle',
-                'font-size':14,
-                'border-width':3,
-                'border-color':'#1e293b'
-            }
-        },
+...correlativas.map(c => ({
+data:{ source:c.source, target:c.target }
+}))
 
-        {
-            selector:'edge',
-            style:{
-                'curve-style':'bezier',
-                'target-arrow-shape':'triangle',
-                'line-color':'#3b82f6',
-                'target-arrow-color':'#3b82f6',
-                'width':2
-            }
-        }
+],
 
-    ],
-    
-    layout:{
-    name:'preset'
-    }
-    
-    })
-    
-    cy.ready(function () {
-    
-        cy.fit()
-        cy.center()
-    
-    }) 
+style:[
+
+{
+selector:'node',
+style:{
+'label':'data(label)',
+'background-color':'#374151',
+'text-valign':'center',
+'text-halign':'center',
+'color':'white',
+'width':220,
+'height':60,
+'shape':'roundrectangle',
+'font-size':14,
+'border-width':3,
+'border-color':'#1e293b'
+}
+},
+
+{
+selector:'edge',
+style:{
+'curve-style':'bezier',
+'target-arrow-shape':'triangle',
+'line-color':'#3b82f6',
+'target-arrow-color':'#3b82f6',
+'width':2
+}
+}
+
+],
+
+layout:{
+name:'preset'
+}
+
 })
+
+/* Centrar grafo después de render */
+
+setTimeout(() => {
+
+cy.fit()
+cy.center()
+
+}, 100)
 
 function actualizarColores(){
 
-    materias.forEach(m => {
+materias.forEach(m => {
 
-        let nodo = cy.getElementById(m.id)
+let nodo = cy.getElementById(m.id)
 
-        if(!nodo) return
+if(!nodo) return
 
-        let color = colorEstado(m.id)
+let color = colorEstado(m.id)
 
-        nodo.style("background-color", color)
+nodo.style("background-color", color)
 
-        if(color === "#ffffff"){
-            nodo.style("color","#000")
-        }else{
-            nodo.style("color","#fff")
-        }
+if(color === "#ffffff"){
+nodo.style("color","#000")
+}else{
+nodo.style("color","#fff")
+}
 
-    })
+})
 
-    localStorage.setItem("estados", JSON.stringify(estados))
+localStorage.setItem("estados", JSON.stringify(estados))
+
 }
 
 cy.on('tap','node',function(evt){
 
-    let id = evt.target.id()
+let id = evt.target.id()
 
-    if(estados[id] === "pendiente")
-        estados[id] = "regular"
+if(estados[id] === "pendiente")
+estados[id] = "regular"
 
-    else if(estados[id] === "regular")
-        estados[id] = "aprobada"
+else if(estados[id] === "regular")
+estados[id] = "aprobada"
 
-    else
-        estados[id] = "pendiente"
+else
+estados[id] = "pendiente"
 
-    actualizarColores()
+actualizarColores()
 
 })
 
