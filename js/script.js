@@ -1,10 +1,11 @@
 const STORAGE_KEY = "abogacia_aprobadas";
 
-/* cargar progreso guardado */
+/* cargar progreso */
 let aprobadas = new Set(
 JSON.parse(localStorage.getItem(STORAGE_KEY)) || []
 );
 
+/* crear nodos */
 const nodes = materias.map(m => ({
 data: {
 id: m.id,
@@ -17,6 +18,7 @@ y: Math.random() * 500
 }
 }));
 
+/* crear edges */
 const edges = correlativas.map(c => ({
 data: {
 source: c.from,
@@ -24,6 +26,7 @@ target: c.to
 }
 }));
 
+/* inicializar cytoscape */
 const cy = cytoscape({
 
 container: document.getElementById('cy'),
@@ -66,6 +69,13 @@ selector: '.aprobada',
 style: {
 'background-color': '#2ECC40'
 }
+},
+
+{
+selector: '.bloqueada',
+style: {
+'background-color': '#AAAAAA'
+}
 }
 
 ],
@@ -76,34 +86,72 @@ name: 'preset'
 
 });
 
-/* restaurar nodos aprobados */
+/* restaurar aprobadas */
 aprobadas.forEach(id => {
-const node = cy.getElementById(id);
-node.addClass("aprobada");
+cy.getElementById(id).addClass("aprobada");
 });
 
-/* click en materia */
-cy.on('tap', 'node', function(evt) {
+/* verificar correlativas */
+function cumpleCorrelativas(id){
+
+const requisitos = correlativas
+.filter(c => c.to === id)
+.map(c => c.from);
+
+return requisitos.every(r => aprobadas.has(r));
+}
+
+/* actualizar estados */
+function actualizarBloqueos(){
+
+cy.nodes().forEach(node => {
+
+const id = node.id();
+
+if(aprobadas.has(id)) return;
+
+if(cumpleCorrelativas(id)){
+
+node.removeClass("bloqueada");
+
+}else{
+
+node.addClass("bloqueada");
+
+}
+
+});
+
+}
+
+actualizarBloqueos();
+
+/* click materia */
+cy.on('tap','node',function(evt){
 
 const node = evt.target;
 const id = node.id();
 
-if (aprobadas.has(id)) {
+/* si está bloqueada no se puede aprobar */
+if(node.hasClass("bloqueada")) return;
+
+if(aprobadas.has(id)){
 
 aprobadas.delete(id);
-node.removeClass('aprobada');
+node.removeClass("aprobada");
 
-} else {
+}else{
 
 aprobadas.add(id);
-node.addClass('aprobada');
+node.addClass("aprobada");
 
 }
 
-/* guardar progreso */
 localStorage.setItem(
 STORAGE_KEY,
 JSON.stringify([...aprobadas])
 );
+
+actualizarBloqueos();
 
 });
