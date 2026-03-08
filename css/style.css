@@ -99,3 +99,25 @@ background:#2ECC40;
 color:white;
 font-weight:bold;
 }
+
+.filtros{
+display:flex;
+gap:10px;
+justify-content:center;
+margin-bottom:15px;
+flex-wrap:wrap;
+}
+
+.filtros button{
+padding:6px 12px;
+border:none;
+border-radius:6px;
+background:#0074D9;
+color:white;
+cursor:pointer;
+font-size:14px;
+}
+
+.filtros button:hover{
+background:#005fa3;
+}
