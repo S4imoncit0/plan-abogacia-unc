@@ -51,7 +51,17 @@ color:"#fff",
 "text-halign":"center",
 width:140,
 height:60,
-"font-size":10
+"font-size":10,
+"transition-property":"background-color, width, height",
+"transition-duration":"0.2s"
+}
+},
+
+{
+selector:"node:hover",
+style:{
+width:150,
+height:70
 }
 },
 
@@ -92,7 +102,13 @@ color:"#000"
 
 layout:{
 name:"preset"
-}
+},
+
+/* CONTROL DE ZOOM */
+
+minZoom:0.5,
+maxZoom:2,
+wheelSensitivity:0.2
 
 });
 
@@ -122,6 +138,8 @@ return correlativas
 
 /* ACTUALIZAR BLOQUEOS Y DISPONIBLES */
 function actualizarBloqueos(){
+
+cy.batch(()=>{
 
 cy.nodes().forEach(node=>{
 
@@ -154,6 +172,8 @@ node.addClass("bloqueada");
 
 });
 
+});
+
 }
 
 /* ACTUALIZAR BARRA DE PROGRESO */
@@ -171,13 +191,27 @@ aprobadasCount + " de " + total + " materias aprobadas (" + porcentaje + "%)";
 
 }
 
-/* CLICK */
+/* CLICK EN MATERIA */
 cy.nodes().on("tap",function(evt){
 
 let node=evt.target;
 let id=node.id();
 
 if(node.hasClass("bloqueada")) return;
+
+/* animación */
+node.animate({
+style:{ width:160, height:80 }
+},{
+duration:100,
+complete:()=>{
+node.animate({
+style:{ width:140, height:60 }
+},{
+duration:100
+});
+}
+});
 
 if(aprobadas.has(id)){
 
