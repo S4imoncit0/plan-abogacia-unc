@@ -100,9 +100,7 @@ name:"preset"
 requestAnimationFrame(()=>{
 
 cy.resize();
-
 cy.fit(cy.elements(),100);
-
 cy.center();
 
 });
@@ -137,7 +135,7 @@ return;
 
 let requisitos=correlativasDe(id);
 
-/* si no tiene correlativas → disponible */
+/* sin correlativas → disponible */
 if(requisitos.length===0){
 node.removeClass("bloqueada");
 node.addClass("disponible");
@@ -155,6 +153,21 @@ node.addClass("bloqueada");
 }
 
 });
+
+}
+
+/* ACTUALIZAR BARRA DE PROGRESO */
+function actualizarProgreso(){
+
+let total = materias.length;
+let aprobadasCount = aprobadas.size;
+
+let porcentaje = Math.round((aprobadasCount / total) * 100);
+
+document.getElementById("progreso-barra").style.width = porcentaje + "%";
+
+document.getElementById("progreso-texto").innerText =
+aprobadasCount + " de " + total + " materias aprobadas (" + porcentaje + "%)";
 
 }
 
@@ -184,9 +197,12 @@ JSON.stringify([...aprobadas])
 );
 
 actualizarBloqueos();
+actualizarProgreso();
 
 });
 
+/* INICIALIZACIÓN */
 actualizarBloqueos();
+actualizarProgreso();
 
 });
