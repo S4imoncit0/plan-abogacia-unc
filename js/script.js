@@ -58,11 +58,11 @@ style:{
 'text-valign':'center',
 'text-halign':'center',
 'color':'white',
-'width':200,
-'height':50,
+'width':220,
+'height':60,
 'shape':'roundrectangle',
-'font-size':12,
-'border-width':2,
+'font-size':14,
+'border-width':3,
 'border-color':'#1e293b'
 }
 },
