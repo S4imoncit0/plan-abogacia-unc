@@ -21,10 +21,10 @@ margin:auto;
 
 /* CYTOSCAPE */
 #cy{
-width:100%;
+width:1200px;
 height:700px;
+margin:20px auto;
 display:block;
-margin-top:20px;
 border-top:1px solid #ddd;
 }
 
