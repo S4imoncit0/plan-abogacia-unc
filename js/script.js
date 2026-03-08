@@ -1,11 +1,31 @@
-let estados = {}
+let estados = JSON.parse(localStorage.getItem("estados")) || {}
 
-materias.forEach(m => estados[m.id] = "pendiente")
+materias.forEach(m => {
+if(!estados[m.id]) estados[m.id] = "pendiente"
+})
 
-function colorEstado(estado){
+function obtenerAprobadas(){
+return Object.keys(estados).filter(id => estados[id] === "aprobada")
+}
+
+function puedeCursar(materia){
+
+let aprobadas = obtenerAprobadas()
+
+return correlativas
+.filter(c => c.target === materia.id)
+.every(c => aprobadas.includes(c.source))
+
+}
+
+function colorEstado(id){
+
+let estado = estados[id]
 
 if(estado === "aprobada") return "#22c55e"
 if(estado === "regular") return "#f97316"
+
+if(puedeCursar({id})) return "#ffffff"
 
 return "#374151"
 
@@ -40,7 +60,9 @@ style:{
 'width':200,
 'height':50,
 'shape':'roundrectangle',
-'font-size':12
+'font-size':12,
+'border-width':2,
+'border-color':'#1e293b'
 }
 },
 
@@ -50,7 +72,8 @@ style:{
 'curve-style':'bezier',
 'target-arrow-shape':'triangle',
 'line-color':'#3b82f6',
-'target-arrow-color':'#3b82f6'
+'target-arrow-color':'#3b82f6',
+'width':2
 }
 }
 
@@ -59,7 +82,8 @@ style:{
 layout:{
 name:'breadthfirst',
 directed:true,
-padding:10
+padding:10,
+spacingFactor:1.3
 }
 
 })
@@ -68,12 +92,19 @@ function actualizarColores(){
 
 materias.forEach(m => {
 
-cy.getElementById(m.id).style(
-'background-color',
-colorEstado(estados[m.id])
-)
+let nodo = cy.getElementById(m.id)
+
+let color = colorEstado(m.id)
+
+nodo.style("background-color", color)
+
+if(color === "#ffffff"){
+nodo.style("color","#000")
+}
 
 })
+
+localStorage.setItem("estados", JSON.stringify(estados))
 
 }
 
