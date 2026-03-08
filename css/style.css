@@ -17,6 +17,7 @@ margin-top:10px;
 .container{
 max-width:1200px;
 margin:auto;
+padding:0 20px;
 }
 
 /* CYTOSCAPE */
