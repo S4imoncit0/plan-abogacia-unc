@@ -121,6 +121,16 @@ style:{
 color:"#000",
 "border-color":"#ca8a04"
 }
+},
+
+/* NUEVO: HIGHLIGHT CUANDO SE DESBLOQUEA */
+
+{
+selector:".highlight",
+style:{
+"border-color":"#f97316",
+"border-width":4
+}
 }
 
 ],
@@ -159,6 +169,16 @@ function correlativasDe(id){
 return correlativas
 .filter(c=>c.to===id)
 .map(c=>c.from);
+
+}
+
+/* NUEVO: OBTENER MATERIAS QUE DEPENDEN DE ESTA */
+
+function dependientesDe(id){
+
+return correlativas
+.filter(c=>c.from===id)
+.map(c=>c.to);
 
 }
 
@@ -305,6 +325,8 @@ let id=node.id();
 
 if(node.hasClass("bloqueada")) return;
 
+let desbloqueadas = dependientesDe(id);
+
 node.animate({
 style:{ width:180, height:70 }
 },{
@@ -327,6 +349,20 @@ node.removeClass("aprobada");
 
 aprobadas.add(id);
 node.addClass("aprobada");
+
+/* NUEVO: HIGHLIGHT DE CORRELATIVAS */
+
+desbloqueadas.forEach(dep=>{
+
+let n = cy.getElementById(dep);
+
+n.addClass("highlight");
+
+setTimeout(()=>{
+n.removeClass("highlight");
+},1200);
+
+});
 
 }
 
