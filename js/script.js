@@ -1,3 +1,10 @@
+const STORAGE_KEY = "abogacia_aprobadas";
+
+/* cargar progreso guardado */
+let aprobadas = new Set(
+JSON.parse(localStorage.getItem(STORAGE_KEY)) || []
+);
+
 const nodes = materias.map(m => ({
 data: {
 id: m.id,
@@ -69,8 +76,13 @@ name: 'preset'
 
 });
 
-let aprobadas = new Set();
+/* restaurar nodos aprobados */
+aprobadas.forEach(id => {
+const node = cy.getElementById(id);
+node.addClass("aprobada");
+});
 
+/* click en materia */
 cy.on('tap', 'node', function(evt) {
 
 const node = evt.target;
@@ -87,5 +99,11 @@ aprobadas.add(id);
 node.addClass('aprobada');
 
 }
+
+/* guardar progreso */
+localStorage.setItem(
+STORAGE_KEY,
+JSON.stringify([...aprobadas])
+);
 
 });
