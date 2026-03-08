@@ -1,9 +1,14 @@
 const STORAGE_KEY = "abogacia_aprobadas";
 
-/* cargar progreso guardado */
+/* cargar progreso */
 let aprobadas = new Set(
   JSON.parse(localStorage.getItem(STORAGE_KEY)) || []
 );
+
+/* esperar que el DOM esté listo */
+document.addEventListener("DOMContentLoaded", () => {
+
+  console.log("Script cargado correctamente");
 
 /* crear nodos */
 const nodes = materias.map(m => ({
@@ -26,7 +31,7 @@ const edges = correlativas.map(c => ({
   }
 }));
 
-/* inicializar cytoscape */
+/* iniciar cytoscape */
 const cy = cytoscape({
 
   container: document.getElementById('cy'),
@@ -86,42 +91,37 @@ const cy = cytoscape({
 
 });
 
-/* restaurar materias aprobadas */
+/* restaurar aprobadas */
 aprobadas.forEach(id => {
   const node = cy.getElementById(id);
-  node.addClass("aprobada");
+  if(node) node.addClass("aprobada");
 });
 
-/* verificar correlativas */
-function cumpleCorrelativas(id) {
+/* función correlativas */
+function cumpleCorrelativas(id){
 
   const requisitos = correlativas
-    .filter(c => c.to === id)
-    .map(c => c.from);
+  .filter(c => c.to === id)
+  .map(c => c.from);
 
-  /* si no tiene correlativas está habilitada */
-  if (requisitos.length === 0) return true;
+  if(requisitos.length === 0) return true;
 
   return requisitos.every(r => aprobadas.has(r));
 }
 
-/* actualizar estados de materias */
-function actualizarBloqueos() {
+/* actualizar bloqueos */
+function actualizarBloqueos(){
 
   cy.nodes().forEach(node => {
 
     const id = node.id();
 
-    if (aprobadas.has(id)) return;
+    if(aprobadas.has(id)) return;
 
-    if (cumpleCorrelativas(id)) {
-
+    if(cumpleCorrelativas(id)){
       node.removeClass("bloqueada");
-
-    } else {
-
+    }else{
       node.addClass("bloqueada");
-
     }
 
   });
@@ -129,23 +129,23 @@ function actualizarBloqueos() {
 }
 
 actualizarBloqueos();
-cy.fit();
 
-/* click en materias */
-cy.on('tap', 'node', function(evt) {
+/* evento click */
+cy.on('tap','node', function(evt){
 
   const node = evt.target;
   const id = node.id();
 
-  /* si está bloqueada no se puede aprobar */
-  if (node.hasClass("bloqueada")) return;
+  console.log("Click en:", id);
 
-  if (aprobadas.has(id)) {
+  if(node.hasClass("bloqueada")) return;
+
+  if(aprobadas.has(id)){
 
     aprobadas.delete(id);
     node.removeClass("aprobada");
 
-  } else {
+  }else{
 
     aprobadas.add(id);
     node.addClass("aprobada");
@@ -158,5 +158,7 @@ cy.on('tap', 'node', function(evt) {
   );
 
   actualizarBloqueos();
+
+});
 
 });
