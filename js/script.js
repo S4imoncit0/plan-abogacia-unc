@@ -1,113 +1,91 @@
-const materias = {
-  "Historia Constitucional": 1,
-  "Introducción al Derecho": 1,
-  "Derecho Romano": 1,
-  "Problemática Económica": 1,
-  "Comprensión y Producción de Textos": 1,
+const nodes = materias.map(m => ({
+data: {
+id: m.id,
+label: m.nombre,
+anio: m.anio
+},
+position: {
+x: m.anio * 300,
+y: Math.random() * 500
+}
+}));
 
-  "Derecho Privado I": 2,
-  "Derecho Constitucional": 2,
-  "Derecho Penal I": 2,
-  "Sociología Jurídica": 2,
+const edges = correlativas.map(c => ({
+data: {
+source: c.from,
+target: c.to
+}
+}));
 
-  "Derecho Privado II": 3,
-  "Derecho Penal II": 3,
-  "Derecho Público Provincial": 3,
-  "Filosofía del Derecho": 3,
+const cy = cytoscape({
 
-  "Derecho Privado III": 4,
-  "Derecho Procesal Civil": 4,
-  "Derecho Administrativo": 4,
+container: document.getElementById('cy'),
 
-  "Derecho Privado IV": 5,
-  "Derecho Procesal Penal": 5,
-  "Derecho del Trabajo": 5,
+elements: [
+...nodes,
+...edges
+],
 
-  "Derecho Comercial": 6,
-  "Derecho Internacional Público": 6,
-  "Derecho de la Seguridad Social": 6,
+style: [
 
-  "Derecho Internacional Privado": 7,
-  "Derecho Tributario": 7,
+{
+selector: 'node',
+style: {
+'label': 'data(label)',
+'text-wrap': 'wrap',
+'text-max-width': 120,
+'background-color': '#0074D9',
+'color': '#fff',
+'text-valign': 'center',
+'text-halign': 'center',
+'width': 140,
+'height': 60,
+'font-size': '10px'
+}
+},
 
-  "Práctica Profesional": 8
-};
+{
+selector: 'edge',
+style: {
+'width': 2,
+'line-color': '#ccc',
+'target-arrow-color': '#ccc',
+'target-arrow-shape': 'triangle'
+}
+},
 
-const correlativas = {
-  "Derecho Privado I": ["Introducción al Derecho"],
-  "Derecho Constitucional": ["Historia Constitucional"],
-  "Derecho Penal I": ["Introducción al Derecho"],
+{
+selector: '.aprobada',
+style: {
+'background-color': '#2ECC40'
+}
+}
 
-  "Derecho Privado II": ["Derecho Privado I"],
-  "Derecho Penal II": ["Derecho Penal I"],
-  "Derecho Público Provincial": ["Derecho Constitucional"],
+],
 
-  "Derecho Privado III": ["Derecho Privado II"],
-  "Derecho Procesal Civil": ["Derecho Privado II"],
-  "Derecho Administrativo": ["Derecho Constitucional"],
+layout: {
+name: 'preset'
+}
 
-  "Derecho Privado IV": ["Derecho Privado III"],
-  "Derecho Procesal Penal": ["Derecho Penal II"],
-  "Derecho del Trabajo": ["Derecho Privado III"],
-
-  "Derecho Comercial": ["Derecho Privado IV"],
-  "Derecho Internacional Público": ["Derecho Constitucional"],
-  "Derecho de la Seguridad Social": ["Derecho del Trabajo"],
-
-  "Derecho Internacional Privado": ["Derecho Comercial"],
-  "Derecho Tributario": ["Derecho Administrativo"],
-
-  "Práctica Profesional": ["Derecho Procesal Civil", "Derecho Procesal Penal"]
-};
+});
 
 let aprobadas = new Set();
 
-function toggleMateria(nombre, elemento) {
-  if (aprobadas.has(nombre)) {
-    aprobadas.delete(nombre);
-    elemento.classList.remove("aprobada");
-  } else {
-    aprobadas.add(nombre);
-    elemento.classList.add("aprobada");
-  }
+cy.on('tap', 'node', function(evt) {
 
-  actualizarBloqueos();
+const node = evt.target;
+const id = node.id();
+
+if (aprobadas.has(id)) {
+
+aprobadas.delete(id);
+node.removeClass('aprobada');
+
+} else {
+
+aprobadas.add(id);
+node.addClass('aprobada');
+
 }
 
-function actualizarBloqueos() {
-  document.querySelectorAll(".materia").forEach(el => {
-    const nombre = el.dataset.nombre;
-
-    if (!correlativas[nombre]) return;
-
-    const requisitos = correlativas[nombre];
-
-    const habilitada = requisitos.every(r => aprobadas.has(r));
-
-    if (!habilitada && !aprobadas.has(nombre)) {
-      el.classList.add("bloqueada");
-    } else {
-      el.classList.remove("bloqueada");
-    }
-  });
-}
-
-function crearMalla() {
-  const contenedor = document.getElementById("malla");
-
-  for (const materia in materias) {
-
-    const div = document.createElement("div");
-    div.className = "materia bloqueada";
-    div.innerText = materia;
-    div.dataset.nombre = materia;
-
-    div.onclick = () => toggleMateria(materia, div);
-
-    contenedor.appendChild(div);
-  }
-
-  actualizarBloqueos();
-}
-
-crearMalla();
+});
