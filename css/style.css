@@ -3,6 +3,7 @@ font-family: Arial, Helvetica, sans-serif;
 margin:0;
 background:#f5f5f5;
 text-align:center;
+transition:background 0.3s,color 0.3s;
 }
 
 h1{
@@ -13,7 +14,27 @@ p{
 margin-top:10px;
 }
 
-/* CONTENEDOR PRINCIPAL */
+/* HEADER */
+
+.header-top{
+display:flex;
+justify-content:center;
+align-items:center;
+gap:15px;
+}
+
+/* BOTON TEMA */
+
+#toggle-theme{
+border:none;
+background:#222;
+color:white;
+padding:6px 10px;
+border-radius:6px;
+cursor:pointer;
+}
+
+/* CONTENEDOR */
 
 .container{
 max-width:1200px;
@@ -58,7 +79,7 @@ transform:translateX(-50%);
 .timeline span:nth-child(4){left:70%;}
 .timeline span:nth-child(5){left:90%;}
 
-/* BARRA DE PROGRESO */
+/* PROGRESO */
 
 .progreso-container{
 width:80%;
@@ -128,7 +149,7 @@ font-size:14px;
 background:#005fa3;
 }
 
-/* DESPLEGABLE MATERIAS DISPONIBLES */
+/* MATERIAS DISPONIBLES */
 
 #materias-disponibles{
 margin:15px auto;
@@ -153,4 +174,34 @@ margin:0;
 
 #lista-disponibles li{
 padding:4px 0;
+}
+
+/* DARK MODE */
+
+.dark-mode{
+background:#0f172a;
+color:white;
+}
+
+.dark-mode .anio-box{
+background:#1e293b;
+border:none;
+}
+
+.dark-mode #materias-disponibles{
+background:#1e293b;
+border:none;
+}
+
+.dark-mode .filtros button{
+background:#2563eb;
+}
+
+.dark-mode .progreso-container{
+background:#334155;
+}
+
+.dark-mode #toggle-theme{
+background:white;
+color:black;
 }
