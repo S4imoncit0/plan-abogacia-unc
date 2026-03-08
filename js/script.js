@@ -9,6 +9,7 @@ JSON.parse(localStorage.getItem(STORAGE_KEY)) || []
 let filtroActual = "all";
 
 /* NODOS */
+
 const nodes = materias.map((m,i)=>({
 data:{
 id:m.id,
@@ -22,6 +23,7 @@ y:100+(i%5)*120
 }));
 
 /* EDGES */
+
 const edges = correlativas.map(c=>({
 data:{
 id:c.from+"_"+c.to,
@@ -45,15 +47,29 @@ style:[
 selector:"node",
 style:{
 label:"data(label)",
-"background-color":"#0074D9",
-color:"#fff",
+
+shape:"round-rectangle",
+
+width:170,
+height:60,
+
+padding:"10px",
+
 "text-wrap":"wrap",
-"text-max-width":120,
+"text-max-width":140,
+
 "text-valign":"center",
 "text-halign":"center",
-width:140,
-height:60,
-"font-size":10,
+
+color:"#fff",
+
+"background-color":"#0074D9",
+
+"border-width":2,
+"border-color":"#1e3a8a",
+
+"font-size":11,
+
 "transition-property":"background-color, width, height",
 "transition-duration":"0.2s"
 }
@@ -62,8 +78,8 @@ height:60,
 {
 selector:"node:hover",
 style:{
-width:150,
-height:70
+width:180,
+height:65
 }
 },
 
@@ -81,22 +97,25 @@ width:2,
 {
 selector:".aprobada",
 style:{
-"background-color":"#2ECC40"
+"background-color":"#16a34a",
+"border-color":"#14532d"
 }
 },
 
 {
 selector:".bloqueada",
 style:{
-"background-color":"#AAAAAA"
+"background-color":"#9ca3af",
+"border-color":"#6b7280"
 }
 },
 
 {
 selector:".disponible",
 style:{
-"background-color":"#FFD43B",
-color:"#000"
+"background-color":"#facc15",
+color:"#000",
+"border-color":"#ca8a04"
 }
 }
 
@@ -112,7 +131,8 @@ wheelSensitivity:0.2
 
 });
 
-/* SOLUCIÓN AL OFFSET */
+/* SOLUCIÓN OFFSET */
+
 requestAnimationFrame(()=>{
 
 cy.resize();
@@ -122,12 +142,14 @@ cy.center();
 });
 
 /* RESTAURAR APROBADAS */
+
 aprobadas.forEach(id=>{
 let node=cy.getElementById(id);
 if(node) node.addClass("aprobada");
 });
 
-/* OBTENER CORRELATIVAS */
+/* CORRELATIVAS */
+
 function correlativasDe(id){
 
 return correlativas
@@ -136,7 +158,8 @@ return correlativas
 
 }
 
-/* ACTUALIZAR BLOQUEOS Y DISPONIBLES */
+/* BLOQUEOS */
+
 function actualizarBloqueos(){
 
 cy.batch(()=>{
@@ -175,7 +198,8 @@ node.addClass("bloqueada");
 
 }
 
-/* ACTUALIZAR BARRA DE PROGRESO */
+/* PROGRESO */
+
 function actualizarProgreso(){
 
 let total = materias.length;
@@ -190,7 +214,7 @@ aprobadasCount + " de " + total + " materias aprobadas (" + porcentaje + "%)";
 
 }
 
-/* NUEVO: LISTA DE MATERIAS DISPONIBLES */
+/* LISTA DISPONIBLES */
 
 function actualizarMateriasDisponibles(){
 
@@ -226,7 +250,7 @@ lista.appendChild(li);
 
 }
 
-/* FILTRO POR AÑO */
+/* FILTRO */
 
 function aplicarFiltro(anio){
 
@@ -271,7 +295,7 @@ aplicarFiltro(anio);
 
 });
 
-/* CLICK EN MATERIA */
+/* CLICK */
 
 cy.nodes().on("tap",function(evt){
 
@@ -281,12 +305,12 @@ let id=node.id();
 if(node.hasClass("bloqueada")) return;
 
 node.animate({
-style:{ width:160, height:80 }
+style:{ width:180, height:70 }
 },{
 duration:100,
 complete:()=>{
 node.animate({
-style:{ width:140, height:60 }
+style:{ width:170, height:60 }
 },{
 duration:100
 });
@@ -316,7 +340,7 @@ actualizarMateriasDisponibles();
 
 });
 
-/* INICIALIZACIÓN */
+/* INIT */
 
 actualizarBloqueos();
 actualizarProgreso();
