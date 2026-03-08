@@ -145,6 +145,21 @@ node.addClass("bloqueada");
 
 }
 
+/* ACTUALIZAR PROGRESO */
+function actualizarProgreso(){
+
+let total = materias.length;
+let aprobadasCount = aprobadas.size;
+
+let porcentaje = Math.round((aprobadasCount / total) * 100);
+
+document.getElementById("progreso-barra").style.width = porcentaje + "%";
+
+document.getElementById("progreso-texto").innerText =
+aprobadasCount + " de " + total + " materias aprobadas (" + porcentaje + "%)";
+
+}
+
 /* CLICK */
 cy.nodes().on("tap",function(evt){
 
@@ -171,9 +186,12 @@ JSON.stringify([...aprobadas])
 );
 
 actualizarBloqueos();
+actualizarProgreso();
 
 });
 
+/* INICIALIZACIÓN */
 actualizarBloqueos();
+actualizarProgreso();
 
 });
