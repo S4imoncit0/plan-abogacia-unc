@@ -1,157 +1,162 @@
 const STORAGE_KEY = "abogacia_aprobadas";
 
-/* cargar progreso */
+/* cargar progreso guardado */
 let aprobadas = new Set(
-JSON.parse(localStorage.getItem(STORAGE_KEY)) || []
+  JSON.parse(localStorage.getItem(STORAGE_KEY)) || []
 );
 
 /* crear nodos */
 const nodes = materias.map(m => ({
-data: {
-id: m.id,
-label: m.nombre,
-anio: m.anio
-},
-position: {
-x: m.anio * 300,
-y: Math.random() * 500
-}
+  data: {
+    id: m.id,
+    label: m.nombre,
+    anio: m.anio
+  },
+  position: {
+    x: m.anio * 300,
+    y: Math.random() * 500
+  }
 }));
 
 /* crear edges */
 const edges = correlativas.map(c => ({
-data: {
-source: c.from,
-target: c.to
-}
+  data: {
+    source: c.from,
+    target: c.to
+  }
 }));
 
 /* inicializar cytoscape */
 const cy = cytoscape({
 
-container: document.getElementById('cy'),
+  container: document.getElementById('cy'),
 
-elements: [
-...nodes,
-...edges
-],
+  elements: [
+    ...nodes,
+    ...edges
+  ],
 
-style: [
+  style: [
 
-{
-selector: 'node',
-style: {
-'label': 'data(label)',
-'text-wrap': 'wrap',
-'text-max-width': 120,
-'background-color': '#0074D9',
-'color': '#fff',
-'text-valign': 'center',
-'text-halign': 'center',
-'width': 140,
-'height': 60,
-'font-size': '10px'
-}
-},
+    {
+      selector: 'node',
+      style: {
+        'label': 'data(label)',
+        'text-wrap': 'wrap',
+        'text-max-width': 120,
+        'background-color': '#0074D9',
+        'color': '#fff',
+        'text-valign': 'center',
+        'text-halign': 'center',
+        'width': 140,
+        'height': 60,
+        'font-size': '10px'
+      }
+    },
 
-{
-selector: 'edge',
-style: {
-'width': 2,
-'line-color': '#ccc',
-'target-arrow-color': '#ccc',
-'target-arrow-shape': 'triangle'
-}
-},
+    {
+      selector: 'edge',
+      style: {
+        'width': 2,
+        'line-color': '#ccc',
+        'target-arrow-color': '#ccc',
+        'target-arrow-shape': 'triangle'
+      }
+    },
 
-{
-selector: '.aprobada',
-style: {
-'background-color': '#2ECC40'
-}
-},
+    {
+      selector: '.aprobada',
+      style: {
+        'background-color': '#2ECC40'
+      }
+    },
 
-{
-selector: '.bloqueada',
-style: {
-'background-color': '#AAAAAA'
-}
-}
+    {
+      selector: '.bloqueada',
+      style: {
+        'background-color': '#AAAAAA'
+      }
+    }
 
-],
+  ],
 
-layout: {
-name: 'preset'
-}
+  layout: {
+    name: 'preset'
+  }
 
 });
 
-/* restaurar aprobadas */
+/* restaurar materias aprobadas */
 aprobadas.forEach(id => {
-cy.getElementById(id).addClass("aprobada");
+  const node = cy.getElementById(id);
+  node.addClass("aprobada");
 });
 
 /* verificar correlativas */
-function cumpleCorrelativas(id){
+function cumpleCorrelativas(id) {
 
-const requisitos = correlativas
-.filter(c => c.to === id)
-.map(c => c.from);
+  const requisitos = correlativas
+    .filter(c => c.to === id)
+    .map(c => c.from);
 
-return requisitos.every(r => aprobadas.has(r));
+  /* si no tiene correlativas está habilitada */
+  if (requisitos.length === 0) return true;
+
+  return requisitos.every(r => aprobadas.has(r));
 }
 
-/* actualizar estados */
-function actualizarBloqueos(){
+/* actualizar estados de materias */
+function actualizarBloqueos() {
 
-cy.nodes().forEach(node => {
+  cy.nodes().forEach(node => {
 
-const id = node.id();
+    const id = node.id();
 
-if(aprobadas.has(id)) return;
+    if (aprobadas.has(id)) return;
 
-if(cumpleCorrelativas(id)){
+    if (cumpleCorrelativas(id)) {
 
-node.removeClass("bloqueada");
+      node.removeClass("bloqueada");
 
-}else{
+    } else {
 
-node.addClass("bloqueada");
+      node.addClass("bloqueada");
 
-}
+    }
 
-});
+  });
 
 }
 
 actualizarBloqueos();
+cy.fit();
 
-/* click materia */
-cy.on('tap','node',function(evt){
+/* click en materias */
+cy.on('tap', 'node', function(evt) {
 
-const node = evt.target;
-const id = node.id();
+  const node = evt.target;
+  const id = node.id();
 
-/* si está bloqueada no se puede aprobar */
-if(node.hasClass("bloqueada")) return;
+  /* si está bloqueada no se puede aprobar */
+  if (node.hasClass("bloqueada")) return;
 
-if(aprobadas.has(id)){
+  if (aprobadas.has(id)) {
 
-aprobadas.delete(id);
-node.removeClass("aprobada");
+    aprobadas.delete(id);
+    node.removeClass("aprobada");
 
-}else{
+  } else {
 
-aprobadas.add(id);
-node.addClass("aprobada");
+    aprobadas.add(id);
+    node.addClass("aprobada");
 
-}
+  }
 
-localStorage.setItem(
-STORAGE_KEY,
-JSON.stringify([...aprobadas])
-);
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify([...aprobadas])
+  );
 
-actualizarBloqueos();
+  actualizarBloqueos();
 
 });
