@@ -81,7 +81,7 @@ style:{
 ],
 
 layout:{
-name:'breadthfirst',
+name:'preset',
 directed:true,
 padding:10,
 spacingFactor:1.3
