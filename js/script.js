@@ -1,139 +1,113 @@
-let estados = JSON.parse(localStorage.getItem("estados")) || {}
+const materias = {
+  "Historia Constitucional": 1,
+  "Introducción al Derecho": 1,
+  "Derecho Romano": 1,
+  "Problemática Económica": 1,
+  "Comprensión y Producción de Textos": 1,
 
-materias.forEach(m => {
-    if(!estados[m.id]) estados[m.id] = "pendiente"
-})
+  "Derecho Privado I": 2,
+  "Derecho Constitucional": 2,
+  "Derecho Penal I": 2,
+  "Sociología Jurídica": 2,
 
-function obtenerAprobadas(){
-    return Object.keys(estados).filter(id => estados[id] === "aprobada")
+  "Derecho Privado II": 3,
+  "Derecho Penal II": 3,
+  "Derecho Público Provincial": 3,
+  "Filosofía del Derecho": 3,
+
+  "Derecho Privado III": 4,
+  "Derecho Procesal Civil": 4,
+  "Derecho Administrativo": 4,
+
+  "Derecho Privado IV": 5,
+  "Derecho Procesal Penal": 5,
+  "Derecho del Trabajo": 5,
+
+  "Derecho Comercial": 6,
+  "Derecho Internacional Público": 6,
+  "Derecho de la Seguridad Social": 6,
+
+  "Derecho Internacional Privado": 7,
+  "Derecho Tributario": 7,
+
+  "Práctica Profesional": 8
+};
+
+const correlativas = {
+  "Derecho Privado I": ["Introducción al Derecho"],
+  "Derecho Constitucional": ["Historia Constitucional"],
+  "Derecho Penal I": ["Introducción al Derecho"],
+
+  "Derecho Privado II": ["Derecho Privado I"],
+  "Derecho Penal II": ["Derecho Penal I"],
+  "Derecho Público Provincial": ["Derecho Constitucional"],
+
+  "Derecho Privado III": ["Derecho Privado II"],
+  "Derecho Procesal Civil": ["Derecho Privado II"],
+  "Derecho Administrativo": ["Derecho Constitucional"],
+
+  "Derecho Privado IV": ["Derecho Privado III"],
+  "Derecho Procesal Penal": ["Derecho Penal II"],
+  "Derecho del Trabajo": ["Derecho Privado III"],
+
+  "Derecho Comercial": ["Derecho Privado IV"],
+  "Derecho Internacional Público": ["Derecho Constitucional"],
+  "Derecho de la Seguridad Social": ["Derecho del Trabajo"],
+
+  "Derecho Internacional Privado": ["Derecho Comercial"],
+  "Derecho Tributario": ["Derecho Administrativo"],
+
+  "Práctica Profesional": ["Derecho Procesal Civil", "Derecho Procesal Penal"]
+};
+
+let aprobadas = new Set();
+
+function toggleMateria(nombre, elemento) {
+  if (aprobadas.has(nombre)) {
+    aprobadas.delete(nombre);
+    elemento.classList.remove("aprobada");
+  } else {
+    aprobadas.add(nombre);
+    elemento.classList.add("aprobada");
+  }
+
+  actualizarBloqueos();
 }
 
-function puedeCursar(materia){
+function actualizarBloqueos() {
+  document.querySelectorAll(".materia").forEach(el => {
+    const nombre = el.dataset.nombre;
 
-    let aprobadas = obtenerAprobadas()
+    if (!correlativas[nombre]) return;
 
-    return correlativas
-        .filter(c => c.target === materia.id)
-        .every(c => aprobadas.includes(c.source))
+    const requisitos = correlativas[nombre];
 
+    const habilitada = requisitos.every(r => aprobadas.has(r));
+
+    if (!habilitada && !aprobadas.has(nombre)) {
+      el.classList.add("bloqueada");
+    } else {
+      el.classList.remove("bloqueada");
+    }
+  });
 }
 
-function colorEstado(id){
+function crearMalla() {
+  const contenedor = document.getElementById("malla");
 
-    let estado = estados[id]
+  for (const materia in materias) {
 
-    if(estado === "aprobada") return "#22c55e"
-    if(estado === "regular") return "#f97316"
+    const div = document.createElement("div");
+    div.className = "materia bloqueada";
+    div.innerText = materia;
+    div.dataset.nombre = materia;
 
-    if(puedeCursar({id})) return "#ffffff"
+    div.onclick = () => toggleMateria(materia, div);
 
-    return "#374151"
+    contenedor.appendChild(div);
+  }
 
+  actualizarBloqueos();
 }
 
-const cy = cytoscape({
-
-container: document.getElementById('cy'),
-
-elements: [
-
-...materias.map(m => ({
-data:{ id:m.id, label:m.nombre },
-position:{ x:m.x, y:m.y }
-})),
-
-...correlativas.map(c => ({
-data:{ source:c.source, target:c.target }
-}))
-
-],
-
-style:[
-
-{
-selector:'node',
-style:{
-'label':'data(label)',
-'background-color':'#374151',
-'text-valign':'center',
-'text-halign':'center',
-'color':'white',
-'width':220,
-'height':60,
-'shape':'roundrectangle',
-'font-size':14,
-'border-width':3,
-'border-color':'#1e293b'
-}
-},
-
-{
-selector:'edge',
-style:{
-'curve-style':'bezier',
-'target-arrow-shape':'triangle',
-'line-color':'#3b82f6',
-'target-arrow-color':'#3b82f6',
-'width':2
-}
-}
-
-],
-
-layout:{
-name:'preset'
-}
-
-})
-
-/* Centrar grafo después de render */
-
-setTimeout(() => {
-
-cy.fit()
-cy.center()
-
-}, 100)
-
-function actualizarColores(){
-
-materias.forEach(m => {
-
-let nodo = cy.getElementById(m.id)
-
-if(!nodo) return
-
-let color = colorEstado(m.id)
-
-nodo.style("background-color", color)
-
-if(color === "#ffffff"){
-nodo.style("color","#000")
-}else{
-nodo.style("color","#fff")
-}
-
-})
-
-localStorage.setItem("estados", JSON.stringify(estados))
-
-}
-
-cy.on('tap','node',function(evt){
-
-let id = evt.target.id()
-
-if(estados[id] === "pendiente")
-estados[id] = "regular"
-
-else if(estados[id] === "regular")
-estados[id] = "aprobada"
-
-else
-estados[id] = "pendiente"
-
-actualizarColores()
-
-})
-
-actualizarColores()
+crearMalla();
