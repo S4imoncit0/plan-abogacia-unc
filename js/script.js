@@ -78,6 +78,14 @@ selector:".bloqueada",
 style:{
 "background-color":"#AAAAAA"
 }
+},
+
+{
+selector:".disponible",
+style:{
+"background-color":"#FFD43B",
+color:"#000"
+}
 }
 
 ],
@@ -114,7 +122,7 @@ return correlativas
 
 }
 
-/* ACTUALIZAR BLOQUEOS */
+/* ACTUALIZAR BLOQUEOS Y DISPONIBLES */
 function actualizarBloqueos(){
 
 cy.nodes().forEach(node=>{
@@ -123,13 +131,16 @@ let id=node.id();
 
 if(aprobadas.has(id)){
 node.removeClass("bloqueada");
+node.removeClass("disponible");
 return;
 }
 
 let requisitos=correlativasDe(id);
 
+/* si no tiene correlativas → disponible */
 if(requisitos.length===0){
 node.removeClass("bloqueada");
+node.addClass("disponible");
 return;
 }
 
@@ -137,26 +148,13 @@ let habilitada=requisitos.every(r=>aprobadas.has(r));
 
 if(habilitada){
 node.removeClass("bloqueada");
+node.addClass("disponible");
 }else{
+node.removeClass("disponible");
 node.addClass("bloqueada");
 }
 
 });
-
-}
-
-/* ACTUALIZAR PROGRESO */
-function actualizarProgreso(){
-
-let total = materias.length;
-let aprobadasCount = aprobadas.size;
-
-let porcentaje = Math.round((aprobadasCount / total) * 100);
-
-document.getElementById("progreso-barra").style.width = porcentaje + "%";
-
-document.getElementById("progreso-texto").innerText =
-aprobadasCount + " de " + total + " materias aprobadas (" + porcentaje + "%)";
 
 }
 
@@ -186,12 +184,9 @@ JSON.stringify([...aprobadas])
 );
 
 actualizarBloqueos();
-actualizarProgreso();
 
 });
 
-/* INICIALIZACIÓN */
 actualizarBloqueos();
-actualizarProgreso();
 
 });
