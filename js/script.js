@@ -38,7 +38,8 @@ container: document.getElementById('cy'),
 elements: [
 
 ...materias.map(m => ({
-data:{ id:m.id, label:m.nombre }
+data:{ id:m.id, label:m.nombre },
+position:{ x:m.x, y:m.y }
 })),
 
 ...correlativas.map(c => ({
