@@ -97,11 +97,19 @@ const cy = cytoscape({
         }
 
     ],
-
+    
     layout:{
-        name:'preset'
+    name:'preset'
     }
-
+    
+    })
+    
+    cy.ready(function () {
+    
+        cy.fit()
+        cy.center()
+    
+    }) 
 })
 
 function actualizarColores(){
