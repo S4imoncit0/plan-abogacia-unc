@@ -77,3 +77,25 @@ transition:width 0.4s;
 #progreso-texto{
 font-weight:bold;
 }
+
+#progreso-por-anio{
+margin-top:10px;
+font-size:14px;
+display:flex;
+justify-content:center;
+gap:20px;
+flex-wrap:wrap;
+}
+
+.anio-box{
+background:#fff;
+border:1px solid #ddd;
+border-radius:6px;
+padding:6px 10px;
+}
+
+.anio-completo{
+background:#2ECC40;
+color:white;
+font-weight:bold;
+}
