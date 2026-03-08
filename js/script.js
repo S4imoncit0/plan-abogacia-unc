@@ -85,8 +85,6 @@ height:65
 }
 },
 
-/* EDGE BASE */
-
 {
 selector:"edge",
 style:{
@@ -132,12 +130,18 @@ style:{
 }
 },
 
+/* DISPONIBLE CON GLOW */
+
 {
 selector:".disponible",
 style:{
 "background-color":"#facc15",
 color:"#000",
-"border-color":"#ca8a04"
+"border-color":"#ca8a04",
+"border-width":3,
+"shadow-blur":20,
+"shadow-color":"#facc15",
+"shadow-opacity":0.8
 }
 },
 
@@ -196,7 +200,7 @@ return correlativas
 
 }
 
-/* NUEVO: ACTUALIZAR COLOR DE EDGES */
+/* EDGE COLORS */
 
 function actualizarCorrelativas(){
 
